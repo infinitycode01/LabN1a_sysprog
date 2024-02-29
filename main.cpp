@@ -4,6 +4,77 @@
 
 using namespace std;
 
+/*
+Написати EBNF
+
+Метасимвол – %. Зміст метасимволу – ланцюжок однакових символів
+повинен бути присутнім в слові в потрібній позиції.
+
+Маска: %hgf%l
+
+EBNF:
+<word> ::= <meta>'hgf'<meta>'l'
+<meta> ::= {<any>}
+<any> := <letter> | <digit> | <other>
+<letter> ::= 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' 
+| 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' 
+| 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | 'a' | 'b' | 'c' | 'd' | 'e' 
+| 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' 
+| 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
+<digit> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+<other> ::= "~" | "_" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+"
+
+*/
+
+string moveToEndOfSymbolsChain(int& i, const string& mask) {
+    string newString;
+    int buffer = i;
+    char bufferChar;
+
+    while (i < mask.length()) 
+    {
+        if (buffer <= mask.length() && mask[buffer + 1] != '%') 
+        {
+            bufferChar = mask[i];
+            newString.push_back(bufferChar);
+            i++;
+        } 
+        else 
+        {
+            break;
+        }
+        buffer = i;  
+    }
+    bufferChar = mask[i];
+    newString.push_back(bufferChar);
+
+    return newString;
+}
+void generateEBNF(string mask) 
+{
+    string symbols;
+
+    cout << "<word> ::= ";
+    for (int i = 0; i < mask.length(); i++) 
+    {
+        if (mask[i] == '%')
+        {
+            cout << "<meta>";
+        }
+        else
+        {
+            symbols = moveToEndOfSymbolsChain(i, mask);
+            cout << "'" << symbols << "'";
+        }
+    }
+    cout << endl;
+    cout << "<meta> ::= {<any>}" << endl;
+    cout << "<any> ::= <letter> | <digit> | <other>" << endl;
+    cout << "<letter> ::= 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'" << endl;
+    cout << "<digit> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'" << endl;
+    cout << "<other> ::= \"~\" | \"_\" | \"!\" | \"@\" | \"#\" | \"$\" | \"%\" | \"^\" | \"&\" | \"*\" | \"(\" | \")\" | \"-\" | \"+\"" << endl;
+}
+
 bool moveToEndOfChain(int& j, string word);
 
 void writeValidWord(string mask, string word, ofstream& outputFile)
@@ -56,7 +127,7 @@ void patternMatcher(string mask, string word, ofstream& outputFile)
     int i = 0, j = 0;
     while (i < mask.length() || j < word.length())
     {
-        if (mask[i] == '%' && isalpha(word[j]))
+        if (mask[i] == '%')
         {
             moveToEndOfChain(j, word);
             i++;
@@ -119,6 +190,7 @@ int main()
     string mask;
     cout << "Input mask:" << endl;
     cin >> mask;
+    generateEBNF(mask);
     writeWordsToFile(mask);
     return 0;
 }
