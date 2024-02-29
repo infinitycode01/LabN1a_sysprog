@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <cctype>
 
 using namespace std;
 
@@ -26,7 +25,33 @@ EBNF:
 
 */
 
-string moveToEndOfSymbolsChain(int& i, const string& mask) {
+string generateRandomWord(const string& mask) 
+{
+    string word;
+    int randomNumber;
+    int randomNumberForChar;
+    for (char c : mask) 
+    {
+        randomNumber = rand() % 9;
+        if (c == '%') 
+        {
+            randomNumberForChar = rand() % 30;
+            for (int i = 0; i < randomNumber; i++)
+            {
+                char randomChar = 'a' + randomNumberForChar;
+                word.push_back(randomChar);
+            }
+        } 
+        else 
+        {
+            word.push_back(c);
+        }
+    }
+    return word;
+}
+
+string moveToEndOfSymbolsChain(int& i, const string& mask) 
+{
     string newString;
     int buffer = i;
     char bufferChar;
@@ -146,6 +171,26 @@ void patternMatcher(string mask, string word, ofstream& outputFile)
     writeValidWord(mask, word, outputFile);
 }
 
+void writeGeneratedWordsToFile(int count, string mask)
+{
+    ofstream outputFile("output_words.txt");
+    if (!outputFile.is_open()) {
+        cout << "File is not open";
+        return;
+    }
+
+    srand(time(nullptr));
+    
+    for (int i = 0; i < count; ++i) 
+    {
+        string randomWord = generateRandomWord(mask);
+        cout << randomWord << endl;
+        outputFile << randomWord << ' ';
+    }
+
+   
+}
+
 void writeWordsToFile(string mask)
 {
     ifstream file("input.txt");
@@ -154,7 +199,7 @@ void writeWordsToFile(string mask)
         return;
     }
     ofstream outputFile("output.txt");
-    if (!file.is_open()) {
+    if (!outputFile.is_open()) {
         cout << "File is not open";
         return;
     }
@@ -190,8 +235,11 @@ int main()
     string mask;
     cout << "Input mask:" << endl;
     cin >> mask;
-    generateEBNF(mask);
     writeWordsToFile(mask);
+    cout << endl;
+    generateEBNF(mask);
+    cout << endl;
+    writeGeneratedWordsToFile(5, mask);
     return 0;
 }
 /*
